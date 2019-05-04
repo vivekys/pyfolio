@@ -378,6 +378,15 @@ def gen_round_trip_stats(round_trips):
     stats['symbols'] = \
         round_trips.groupby('symbol')['returns'].agg(RETURN_STATS).T
 
+    profit = round_trips[round_trips["isProfitable"] == True].groupby(["symbol", "long"])[["pnl"]].sum()
+    profit = profit.rename(columns={"pnl": "Risk-Return"})
+    loss = round_trips[round_trips["isProfitable"] == False].groupby(["symbol", "long"])[["pnl"]].sum() * -1
+    loss = loss.rename(columns={"pnl": "Risk-Return"})
+    rr = profit / loss
+    rr = rr.stack().reset_index()
+    rr = rr.drop(columns=['level_2'])
+    rr = rr.rename(columns={0: 'Risk-Return'})
+    stats['rr'] = rr
     return stats
 
 
@@ -400,7 +409,7 @@ def print_round_trip_stats(round_trips, hide_pos=False):
 
     print_table(stats['summary'], float_format='{:.2f}'.format,
                 name='Summary stats')
-    print_table(stats['pnl'], float_format='${:.2f}'.format, name='PnL stats')
+    print_table(stats['pnl'], float_format='{:.2f}'.format, name='PnL stats')
     print_table(stats['duration'], float_format='{:.2f}'.format,
                 name='Duration stats')
     print_table(stats['returns'] * 100, float_format='{:.2f}%'.format,
@@ -410,3 +419,6 @@ def print_round_trip_stats(round_trips, hide_pos=False):
         stats['symbols'].columns = stats['symbols'].columns.map(format_asset)
         print_table(stats['symbols'] * 100,
                     float_format='{:.2f}%'.format, name='Symbol stats')
+
+    print_table(stats['rr'], float_format='{:.2f}%'.format,
+                    name='Risk - Return Trade Off')

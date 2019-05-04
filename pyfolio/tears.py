@@ -803,7 +803,8 @@ def create_txn_tear_sheet(returns, positions, transactions,
 @plotting.customize
 def create_round_trip_tear_sheet(returns, positions, transactions,
                                  sector_mappings=None,
-                                 estimate_intraday='infer', return_fig=False):
+                                 estimate_intraday='infer', return_fig=False,
+                                 mult=1.0, performance=False):
     """
     Generate a number of figures and plots describing the duration,
     frequency, and profitability of trade "round trips."
@@ -831,6 +832,8 @@ def create_round_trip_tear_sheet(returns, positions, transactions,
     return_fig : boolean, optional
         If True, returns the figure that was plotted on.
     """
+    if performance :
+        plotting.show_perf_stats(returns)
 
     positions = utils.check_intraday(estimate_intraday, returns,
                                      positions, transactions)
@@ -848,6 +851,11 @@ def create_round_trip_tear_sheet(returns, positions, transactions,
             """Fewer than 5 round-trip trades made.
                Skipping round trip tearsheet.""", UserWarning)
         return
+
+    trades["pnl"] = trades["pnl"] * 5
+    trades["rt_returns"] = trades["rt_returns"] * 5
+    trades["returns"] = trades["returns"] * 5
+    trades["isProfitable"] = trades["pnl"] > 0
 
     round_trips.print_round_trip_stats(trades)
 
@@ -877,7 +885,7 @@ def create_round_trip_tear_sheet(returns, positions, transactions,
     ax_holding_time.set(xlabel='Holding time in days')
 
     sns.distplot(trades.pnl, kde=False, ax=ax_pnl_per_round_trip_dollars)
-    ax_pnl_per_round_trip_dollars.set(xlabel='PnL per round-trip trade in $')
+    ax_pnl_per_round_trip_dollars.set(xlabel='PnL per round-trip trade')
 
     sns.distplot(trades.returns.dropna() * 100, kde=False,
                  ax=ax_pnl_per_round_trip_pct)

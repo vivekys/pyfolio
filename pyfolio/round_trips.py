@@ -420,5 +420,5 @@ def print_round_trip_stats(round_trips, hide_pos=False):
         print_table(stats['symbols'] * 100,
                     float_format='{:.2f}%'.format, name='Symbol stats')
 
-    print_table(stats['rr'], float_format='{:.2f}%'.format,
+    print_table(stats['rr'], float_format='{:.2f}'.format,
                     name='Risk - Return Trade Off')

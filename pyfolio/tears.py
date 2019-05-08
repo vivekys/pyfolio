@@ -852,9 +852,9 @@ def create_round_trip_tear_sheet(returns, positions, transactions,
                Skipping round trip tearsheet.""", UserWarning)
         return
 
-    trades["pnl"] = trades["pnl"] * 5
-    trades["rt_returns"] = trades["rt_returns"] * 5
-    trades["returns"] = trades["returns"] * 5
+    trades["pnl"] = trades["pnl"] * mult
+    trades["rt_returns"] = trades["rt_returns"] * mult
+    trades["returns"] = trades["returns"] * mult
     trades["isProfitable"] = trades["pnl"] > 0
 
     round_trips.print_round_trip_stats(trades)

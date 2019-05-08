@@ -1796,7 +1796,7 @@ def show_profit_attribution(round_trips):
     """
 
     total_pnl = round_trips['pnl'].sum()
-    pnl_attribution = round_trips.groupby('symbol')['pnl'].sum() / total_pnl
+    pnl_attribution = round_trips.groupby('symbol')['pnl'].sum() / abs(total_pnl)
     pnl_attribution.name = ''
 
     pnl_attribution.index = pnl_attribution.index.map(utils.format_asset)
